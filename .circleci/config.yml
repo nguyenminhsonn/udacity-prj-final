@@ -15,27 +15,27 @@ jobs:
       - run:
           name: Install Front-End Dependencies
           command: |
-            cd uda_prj3
+            cd udacity-shopping-store
             npm install
       - run:
           name: Build Front-End
           command: |
-            cd uda_prj3
+            cd udacity-shopping-store
             npm run build  # Build frontend
       - run:
           name: Install Back-End Dependencies
           command: |
-            cd Project2
+            cd uda_project2
             npm install
       - run:
           name: Test Back-End Dependencies
           command: |
-            cd Project2
+            cd uda_project2
             npm run test
       - run:
           name: Build Back-End
           command: |
-            cd Project2
+            cd uda_project2
             npm run build  # Build backend
 
   deploy:
@@ -47,20 +47,20 @@ jobs:
       - eb/setup
       - aws-cli/setup
       - checkout
-      - run:
-          name: Set up env variables
-          command: |
-            eb setenv AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-      - run:
-          name: Deploy Application
-          command: |
-            cd uda_prj3
-            npm install
-            npm run build
-            cd ../Project2
-            npm install
-            npm run build
-            eb deploy 
+      # - run:
+      #     name: Set up env variables
+      #     command: |
+      #       eb setenv AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+      # - run:
+      #     name: Deploy Application
+      #     command: |
+      #       cd uda_prj3
+      #       npm install
+      #       npm run build
+      #       cd ../Project2
+      #       npm install
+      #       npm run build
+      #       eb deploy 
 
 workflows:
   build_and_deploy:
