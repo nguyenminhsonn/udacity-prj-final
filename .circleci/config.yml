@@ -7,10 +7,10 @@ orbs:
 jobs:
   build:
     docker:
-      - image: "cimg/node:15.14" 
+      - image: "cimg/node:18.17" 
     steps:
       - node/install:
-          node-version: '15.14'
+          node-version: '18.17'
       - checkout
       - run:
           name: Install Front-End Dependencies
@@ -43,7 +43,7 @@ jobs:
       - image: "cimg/base:stable"
     steps:
       - node/install:
-          node-version: '15.14'
+          node-version: '18.17'
       - eb/setup
       - aws-cli/setup
       - checkout
