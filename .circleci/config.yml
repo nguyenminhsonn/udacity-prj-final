@@ -1,384 +1,75 @@
 version: 2.1
 orbs:
-  # orbs contain basic recipes and reproducible actions (install node, aws, etc.)
-  node: circleci/node@4.7.0
-  aws-cli: circleci/aws-cli@2.0.3
+  node: circleci/node@5.0.2
   eb: circleci/aws-elastic-beanstalk@2.0.1
-  browser-tools: circleci/browser-tools@1.2.3
-  cypress: cypress-io/cypress@1.29.0
-  # different jobs are called later in the workflows sections
+  aws-cli: circleci/aws-cli@3.1.1
+
 jobs:
-  backend-build-test:
+  build:
     docker:
-      # the base image can run most needed actions with orbs
-      - image: 'cimg/base:stable'
+      - image: "cimg/node:15.14" 
     steps:
-      - node/install
+      - node/install:
+          node-version: '15.14'
       - checkout
-      # use Node v14.18.1
       - run:
-          name: Swap node versions
+          name: Install Front-End Dependencies
           command: |
-            set +e
-            wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.1/install.sh | bash
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-            nvm install v14
-            nvm alias default 14.18.1
+            cd uda_prj3
+            npm install
+      - run:
+          name: Build Front-End
+          command: |
+            cd uda_prj3
+            npm run build  # Build frontend
+      - run:
+          name: Install Back-End Dependencies
+          command: |
+            cd Project2
+            npm install
+      - run:
+          name: Test Back-End Dependencies
+          command: |
+            cd Project2
+            npm run test
+      - run:
+          name: Build Back-End
+          command: |
+            cd Project2
+            npm run build  # Build backend
 
-            echo 'export NVM_DIR="$HOME/.nvm"' >> $BASH_ENV
-            echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
-      # install dependencies for back-end application
-      - run:
-          name: Back-End Install
-          command: |
-            npm run backend:install
-      # build back-end application
-      - run:
-          name: Back-End Build
-          command: |
-            npm run backend:build-staging
-      # run back-end tests
-      - run:
-          name: Back-End Unit and Integration Tests
-          command: |
-            npm run backend:test-staging
-  backend-build-test-deploy-staging:
+  deploy:
     docker:
-      # the base image can run most needed actions with orbs
-      - image: 'cimg/base:stable'
+      - image: "cimg/base:stable"
     steps:
-      - node/install
-      - checkout
+      - node/install:
+          node-version: '15.14'
       - eb/setup
-      # use Node v14.18.1
-      - run:
-          name: Swap node versions
-          command: |
-            set +e
-            wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.1/install.sh | bash
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-            nvm install v14
-            nvm alias default 14.18.1
-
-            echo 'export NVM_DIR="$HOME/.nvm"' >> $BASH_ENV
-            echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
-      # install dependencies for back-end application
-      - run:
-          name: Back-End Install
-          command: |
-            npm run backend:install
-      # build back-end application
-      - run:
-          name: Back-End Build
-          command: |
-            npm run backend:build-staging
-      # run back-end tests
-      - run:
-          name: Back-End Unit and Integration Tests
-          command: |
-            npm run backend:test-staging
-      # set environment variables for EB
-      - run:
-          name: Set Environment Variables for EB
-          command: |
-            eb setenv key=value
-      # deploy back-end application artifacts to Elastic Beanstalk
-      - run:
-          name: Back-End Deploy
-          command: |
-            npm run backend:deploy-staging
-  backend-build-test-deploy-prod:
-    docker:
-      # the base image can run most needed actions with orbs
-      - image: 'cimg/base:stable'
-    steps:
-      - node/install
-      - checkout
-      - eb/setup
-      # use Node v14.18.1
-      - run:
-          name: Swap node versions
-          command: |
-            set +e
-            wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.1/install.sh | bash
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-            nvm install v14
-            nvm alias default 14.18.1
-
-            echo 'export NVM_DIR="$HOME/.nvm"' >> $BASH_ENV
-            echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
-      # install dependencies for back-end application
-      - run:
-          name: Back-End Install
-          command: |
-            npm run backend:install
-      # build back-end application
-      - run:
-          name: Back-End Build
-          command: |
-            npm run backend:build-prod
-      # run back-end tests
-      - run:
-          name: Back-End Unit and Integration Tests
-          command: |
-            npm run backend:test-prod
-      # set environment variables for EB
-      - run:
-          name: Set Environment Variables for EB
-          command: |
-            eb setenv key=value
-      # deploy back-end application artifacts to Elastic Beanstalk
-      - run:
-          name: Back-End Deploy
-          command: |
-            npm run backend:deploy-prod
-  frontend-build-test:
-    docker:
-      # the base image can run most needed actions with orbs
-      - image: 'cimg/base:stable'
-    steps:
-      - node/install
-      - checkout
-      - browser-tools/install-chrome
-      - browser-tools/install-chromedriver
-      # use Node v14.18.1
-      - run:
-          name: Swap node versions
-          command: |
-            set +e
-            wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.1/install.sh | bash
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-            nvm install v14
-            nvm alias default 14.18.1
-
-            echo 'export NVM_DIR="$HOME/.nvm"' >> $BASH_ENV
-            echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
-      # install dependencies for front-end application
-      - run:
-          name: Front-End Install
-          command: |
-            npm run frontend:install
-      # build front-end application
-      - run:
-          name: Front-End Build
-          command: |
-            npm run frontend:build
-      - run:
-          name: Check browser installation
-          command: |
-            google-chrome --version
-            chromedriver --version
-      # run front-end unit tests
-      - run:
-          name: Front-End Unit Tests
-          command: |
-            npm run frontend:test
-  frontend-build-test-deploy-staging:
-    docker:
-      # the base image can run most needed actions with orbs
-      - image: 'cimg/base:stable'
-    steps:
-      - node/install
-      - checkout
       - aws-cli/setup
-      - browser-tools/install-chrome
-      - browser-tools/install-chromedriver
-      # use Node v14.18.1
-      - run:
-          name: Swap node versions
-          command: |
-            set +e
-            wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.1/install.sh | bash
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-            nvm install v14
-            nvm alias default 14.18.1
-
-            echo 'export NVM_DIR="$HOME/.nvm"' >> $BASH_ENV
-            echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
-      # install dependencies for front-end application
-      - run:
-          name: Front-End Install
-          command: |
-            npm run frontend:install
-      # build front-end application
-      - run:
-          name: Front-End Build
-          command: |
-            npm run frontend:build-staging
-      - run:
-          name: Check browser installation
-          command: |
-            google-chrome --version
-            chromedriver --version
-      # run front-end unit tests
-      - run:
-          name: Front-End Unit Tests
-          command: |
-            npm run frontend:test
-      # deploy front-end application artifacts to Simple Storage Service
-      - run:
-          name: Front-End Deploy
-          command: |
-            npm run frontend:deploy-staging
-  frontend-build-test-deploy-prod:
-    docker:
-      # the base image can run most needed actions with orbs
-      - image: 'cimg/base:stable'
-    steps:
-      - node/install
       - checkout
-      - aws-cli/setup
-      - browser-tools/install-chrome
-      - browser-tools/install-chromedriver
-      # use Node v14.18.1
       - run:
-          name: Swap node versions
+          name: Set up env variables
           command: |
-            set +e
-            wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.1/install.sh | bash
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-            nvm install v14
-            nvm alias default 14.18.1
+            eb setenv AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+      - run:
+          name: Deploy Application
+          command: |
+            cd uda_prj3
+            npm install
+            npm run build
+            cd ../Project2
+            npm install
+            npm run build
+            eb deploy 
 
-            echo 'export NVM_DIR="$HOME/.nvm"' >> $BASH_ENV
-            echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
-      # install dependencies for front-end application
-      - run:
-          name: Front-End Install
-          command: |
-            npm run frontend:install
-      # build front-end application
-      - run:
-          name: Front-End Build
-          command: |
-            npm run frontend:build-prod
-      - run:
-          name: Check browser installation
-          command: |
-            google-chrome --version
-            chromedriver --version
-      # run front-end unit tests
-      - run:
-          name: Front-End Unit Tests
-          command: |
-            npm run frontend:test
-      # deploy front-end application artifacts to Simple Storage Service
-      - run:
-          name: Front-End Deploy
-          command: |
-            npm run frontend:deploy-prod
 workflows:
-  mystore-pr-workflow:
+  build_and_deploy:
     jobs:
-      # backend: build & test - for PRs
-      - backend-build-test:
-          filters:
-            branches:
-              ignore:
-                - main
-                - staging
-      # frontend: build & test - for PRs
-      - frontend-build-test:
-          filters:
-            branches:
-              ignore:
-                - main
-                - staging
-  mystore-staging-workflow:
-    jobs:
-      # backend: build, test, deploy - staging
-      - backend-build-test-deploy-staging:
-          filters:
-            branches:
-              only:
-                - staging
-      # install Cypress - staging
-      - cypress/install:
-          name: cypress-install-staging
+      - build
+      - hold:
+          type: approval
           requires:
-            - backend-build-test-deploy-staging
-          filters:
-            branches:
-              only:
-                - staging
-      # run Cypress end-to-end tests - staging
-      - cypress/run:
-          name: cypress-run-staging
+            - build
+      - deploy:
           requires:
-            - cypress-install-staging
-          executor: cypress/base-12-14-0
-          working_directory: mystore-project-frontend
-          start: npm run start-e2e-staging
-          wait-on: 'http://localhost:4200'
-          record: true
-          store_artifacts: true
-          parallel: true
-          parallelism: 4
-          group: 4 machines
-          filters:
-            branches:
-              only:
-                - staging
-      # frontend: build, test, deploy - staging
-      - frontend-build-test-deploy-staging:
-          requires:
-            - cypress-run-staging
-          filters:
-            branches:
-              only:
-                - staging
-  mystore-prod-workflow:
-    jobs:
-      # backend: build, test, deploy - production
-      - backend-build-test-deploy-prod:
-          filters:
-            branches:
-              only:
-                - main
-      # install Cypress - production
-      - cypress/install:
-          name: cypress-install-prod
-          requires:
-            - backend-build-test-deploy-prod
-          filters:
-            branches:
-              only:
-                - main
-      # run Cypress end-to-end tests - production
-      - cypress/run:
-          name: cypress-run-prod
-          requires:
-            - cypress-install-prod
-          executor: cypress/base-12-14-0
-          working_directory: mystore-project-frontend
-          start: npm run start-e2e-prod
-          wait-on: 'http://localhost:4200'
-          record: true
-          store_artifacts: true
-          parallel: true
-          parallelism: 4
-          group: 4 machines
-          filters:
-            branches:
-              only:
-                - main
-      # frontend: build, test, deploy - production
-      - frontend-build-test-deploy-prod:
-          requires:
-            - cypress-run-prod
-          filters:
-            branches:
-              only:
-                - main
+            - hold

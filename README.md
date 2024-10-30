@@ -1,10 +1,8 @@
-# mystore-fullstack
-
-MyStore is a full stack web application hosted on Amazon Web Services and is the final project under Udacity's Full Stack JavaScript Developer Nanodegree Program.
+# MyShoppingStore
 
 ---
 
-UI:  https://mystorefrontend.s3.amazonaws.com/index.html
+UI:  http://myshoppingstorebucket.s3-website-us-east-1.amazonaws.com/
 
 API: http://mystorebackend-env.eba-jydy275n.us-east-1.elasticbeanstalk.com
 
