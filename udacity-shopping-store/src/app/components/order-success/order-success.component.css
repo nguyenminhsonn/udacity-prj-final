@@ -1,0 +1,18 @@
+.order-success-page {
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.success-title {
+  color: rgb(107, 187, 107);
+  font-size: 50px;
+  font-weight: 500;
+}
+
+.customer-name,
+.total-cost {
+  font-weight: bold;
+}

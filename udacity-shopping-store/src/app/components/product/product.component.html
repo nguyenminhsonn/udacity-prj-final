@@ -1,0 +1,15 @@
+<div class="product-container">
+  <a routerLink="detail/{{ productItem.id }}">
+    <img alt="product-image" src="{{ productItem.url }}" class="product-image" />
+  </a>
+  <div class="product-title">
+    <h2 class="product-name">{{ productItem.name }}</h2>
+    <p class="product-price">${{ productItem.price }}</p>
+  </div>
+  <div class="product-actions">
+    <input type="number" (ngModelChange)="validateQuantity()" [(ngModel)]="quantity" min="1" />
+    <button class="btn btn-success" (click)="addToCart(productItem.id)">
+      Add to Cart
+    </button>
+  </div>
+</div>

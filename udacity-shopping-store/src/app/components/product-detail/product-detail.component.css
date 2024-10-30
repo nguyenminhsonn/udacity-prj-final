@@ -1,0 +1,35 @@
+.product-detail-container {
+  height: 700px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.product-image {
+  width: 10vh;
+  height: auto;
+  border-radius: 8px;
+  margin-right: 100px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.product-name {
+  font-size: 50px;
+  font-weight: 500;
+}
+
+.product-price {
+  font-size: 30px;
+  color: #28a745;
+}
+
+.product-quantity {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.product-detail-actions {
+  display: flex;
+  align-items: center;
+}

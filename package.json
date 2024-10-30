@@ -1,0 +1,22 @@
+{
+    "scripts": {
+        "frontend:install": "cd mystore-project-frontend && npm install",
+        "backend:install": "cd mystore-project-backend && npm install",
+        "frontend:build": "cd mystore-project-frontend && npm run build",
+        "frontend:build-staging": "cd mystore-project-frontend && npm run build-staging",
+        "frontend:build-prod": "cd mystore-project-frontend && npm run build-prod",
+        "backend:build": "cd mystore-project-backend && npm run build",
+        "backend:build-staging": "cd mystore-project-backend && npm run build-staging",
+        "backend:build-prod": "cd mystore-project-backend && npm run build-prod",
+        "backend:test": "cd mystore-project-backend && npm run test",
+        "backend:test-staging": "cd mystore-project-backend && npm run test-staging",
+        "backend:test-prod": "cd mystore-project-backend && npm run test-prod",
+        "frontend:test": "cd mystore-project-frontend && npm run test",
+        "frontend:test-e2e": "cd mystore-project-frontend && npm run test-e2e",
+        "backend:deploy-prod": "cd mystore-project-backend && npm run deploy-prod",
+        "backend:deploy-staging": "cd mystore-project-backend && npm run deploy-staging",
+        "frontend:deploy-prod": "cd mystore-project-frontend && npm run deploy-prod",
+        "frontend:deploy-staging": "cd mystore-project-frontend && npm run deploy-staging",
+        "frontend:deploy": "cd mystore-project-frontend && npm run deploy"
+    }
+}

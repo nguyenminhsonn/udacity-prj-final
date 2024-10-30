@@ -1,0 +1,60 @@
+<div class="shopping-cart-container">
+  <div class="left-section">
+    <ul id="item-list">
+      <li *ngFor="let item of cartItems" class="cart-item">
+        <img [src]="item.url" alt="{{ item.name }}" class="item-image" />
+        <div class="details">
+          <h4 class="item-name">{{ item.name }}</h4>
+          <h4 class="item-price">${{ item.price }}</h4>
+          <div class="quantity-control">
+            <label [for]="'quantity' + item.id" style="margin-right: 10px">Quantity:</label>
+            <input type="number" [id]="'quantity' + item.id" style="width: 60px" min="1" [(ngModel)]="item.quantity"
+              (ngModelChange)="calculateTotalCost()" />
+          </div>
+          <button type="button" class="btn btn-danger" (click)="removeCartItem(item)">Remove</button>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="right-section">
+    <div *ngIf="cartItems.length > 0">
+      <strong>Total Amount: </strong>
+      <span id="total-cost">${{ totalCost | number : "1.2-2" }}</span>
+    </div>
+    <form id="customer-details-form" (ngSubmit)="submitOrder()" #form="ngForm">
+      <!-- <label [for]="'name'">Full Name:</label>
+      <input type="text" id="name" required minlength="3" placeholder="(minimum 3 characters)" #fullname="ngModel"
+        [(ngModel)]="customerDetails.name" [ngModelOptions]="{ standalone: true }" />
+
+      <label [for]="'address'">Address:</label>
+      <input type="text" id="address" required minlength="6" placeholder="(minimum 6 characters)"
+        [(ngModel)]="customerDetails.address" [ngModelOptions]="{ standalone: true }" />
+
+      <label [for]="'credit-card'">Credit Card:</label>
+      <input type="text" id="credit-card" required [(ngModel)]="customerDetails.creditCard"
+        [ngModelOptions]="{ standalone: true }" />
+
+      <div>
+        <button style="margin-top: 10px" type="submit" class="btn btn-primary"
+          [disabled]="cartItems.length === 0 || form.invalid">
+          Place Order {{form.invalid}}
+        </button>
+      </div> -->
+      <label>Fullname</label>
+      <input type="text" name="name" required minlength="3" placeholder="(minimum 3 characters)"
+        [(ngModel)]="customerDetails.name">
+
+      <label>Address</label>
+      <input type="text" name="address" required minlength="6" placeholder="(minimum 6 characters)"
+        [(ngModel)]="customerDetails.address">
+
+      <label>Credit Card</label>
+      <input type="text" name="creditCard" required pattern="^[0-9]*$" minlength="16" maxlength="16"
+        placeholder="(16-digit number)" [(ngModel)]="customerDetails.creditCard">
+
+      <div>
+        <button class="btn btn-primary" style="margin-top: 10px" type="submit" [disabled]="form.invalid">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>

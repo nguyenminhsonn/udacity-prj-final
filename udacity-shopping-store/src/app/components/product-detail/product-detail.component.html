@@ -1,0 +1,31 @@
+<div *ngIf="product" class="product-detail-container">
+  <img src="{{ product.url }}" alt="product-image" class="product-image" />
+  <div class="product-detail-info">
+    <h1 class="product-name">{{ product.name }}</h1>
+    <p class="product-price">${{ product.price }}</p>
+    <p>{{ product.description }}</p>
+    <div class="product-quantity">
+      <label for="quantity" style="margin-right: 10px">Quantity:</label>
+      <input
+        type="number"
+        style="width: 60px"
+        (change)="validateQuantity()"
+        [(ngModel)]="quantity"
+        min="1"
+      />
+    </div>
+    <div class="product-detail-actions">
+      <button
+        class="btn btn-success"
+        (click)="addToCart(product)"
+        style="margin-right: 10px"
+      >
+        Add to Cart
+      </button>
+      <a routerLink=""><button class="btn btn-light">Back to Home</button> </a>
+    </div>
+  </div>
+</div>
+<div *ngIf="!product">
+  <h1>Product not existed</h1>
+</div>
